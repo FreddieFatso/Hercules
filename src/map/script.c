@@ -4019,6 +4019,14 @@ void script_check_buildin_argtype(struct script_state* st, int func)
 					invalid++;
 				}
 				break;
+			case 'c':
+				if (!reference_toconstant(data)) {
+					// constant
+					ShowWarning("Unexpected type for argument %d. Expected constant.\n", idx-1);
+					script->reportdata(data);
+					invalid++;
+				}
+				break;
 		}
 	}
 
@@ -12121,7 +12129,7 @@ int buildin_maprespawnguildid_sub_mob(struct block_list *bl,va_list ap)
 {
 	struct mob_data *md=(struct mob_data *)bl;
 
-	if (md->guardian_data == NULL && md->class_ != MOBID_EMPELIUM)
+	if(!md->guardian_data && md->class_ != MOBID_EMPERIUM)
 		status_kill(bl);
 
 	return 0;
@@ -20049,10 +20057,11 @@ bool script_add_builtin(const struct script_function *buildin, bool override) {
 		// 'i' - int
 		// 'r' - reference (of a variable)
 		// 'l' - label
+		// 'c' - constant
 		// '?' - one optional parameter
 		// '*' - unknown number of optional parameters
 		char *p = buildin->arg;
-		while( *p == 'v' || *p == 's' || *p == 'i' || *p == 'r' || *p == 'l' ) ++p;
+		while( *p == 'v' || *p == 's' || *p == 'i' || *p == 'r' || *p == 'l' || *p == 'c' ) ++p;
 		while( *p == '?' ) ++p;
 		if( *p == '*' ) ++p;
 		if( *p != 0 ) {
